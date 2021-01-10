@@ -5,9 +5,7 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAdbClient", "SharpAdbClient\SharpAdbClient.csproj", "{65473257-E70F-410B-9269-D0C0F771EA87}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAdbClient.Tests", "SharpAdbClient.Tests\SharpAdbClient.Tests.csproj", "{2C43B828-BE5E-47B6-93BB-A624B6B36633}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdbGUIClient", "AdbGUIClient\AdbGUIClient.csproj", "{76F4A06F-7F46-49C4-AE94-9A6D03DF42DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdbGUIClient", "AdbGUIClient\AdbGUIClient.csproj", "{76F4A06F-7F46-49C4-AE94-9A6D03DF42DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +17,6 @@ Global
 		{65473257-E70F-410B-9269-D0C0F771EA87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65473257-E70F-410B-9269-D0C0F771EA87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65473257-E70F-410B-9269-D0C0F771EA87}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2C43B828-BE5E-47B6-93BB-A624B6B36633}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2C43B828-BE5E-47B6-93BB-A624B6B36633}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2C43B828-BE5E-47B6-93BB-A624B6B36633}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2C43B828-BE5E-47B6-93BB-A624B6B36633}.Release|Any CPU.Build.0 = Release|Any CPU
 		{76F4A06F-7F46-49C4-AE94-9A6D03DF42DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{76F4A06F-7F46-49C4-AE94-9A6D03DF42DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76F4A06F-7F46-49C4-AE94-9A6D03DF42DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
