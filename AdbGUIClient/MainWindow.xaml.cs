@@ -20,9 +20,30 @@ namespace AdbGUIClient {
 	/// </summary>
 	public partial class MainWindow : Window {
 		private readonly AppData m_data = new AppData();
+		private Type[] m_subControlTypes = new[] {
+			typeof(BasicInfo)
+		};
+
 		public MainWindow() {
 			InitializeComponent();
+			foreach (var type in m_subControlTypes) {
+				var panel = Activator.CreateInstance(type) as ISubControlPanel;
+				panel.AssignAppData(m_data);
+
+				var tabItem = new TabItem {
+					Header = panel.GetName(),
+					Content = panel
+				};
+
+				tcControlContainer.Items.Add(tabItem);
+			}
+
 			DataContext = m_data;
+			Closing += MainWindow_Closing;
+		}
+
+		private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			m_data.Exit();
 		}
 
 		private void SelectAdb_Click(object sender, RoutedEventArgs e) {
@@ -31,6 +52,10 @@ namespace AdbGUIClient {
 			if (dlg.ShowDialog() == true) {
 				m_data.AdbPath = dlg.FileName;	
 			}
+		}
+
+		private void tcControlContainer_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+			
 		}
 	}
 }

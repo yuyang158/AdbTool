@@ -33,5 +33,10 @@
                     Click="SelectAdb_Click"
                     Margin="5,0,0,0">Select adb</Button>
         </Grid>
+        <Grid Grid.Row="1">
+            <TabControl x:Name="tcControlContainer"
+                        SelectionChanged="tcControlContainer_SelectionChanged">
+            </TabControl>
+        </Grid>
     </Grid>
 </Window>

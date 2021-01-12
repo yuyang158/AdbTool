@@ -4,11 +4,13 @@ namespace AdbGUIClient {
 	public class Device {
 		private readonly DeviceData m_deviceData;
 
-		public string DisplayName { get => m_deviceData.Name; }
+		public string DisplayName => m_deviceData.Name;
 
-		public string Serial { get => m_deviceData.Serial; }
+		public string Serial => m_deviceData.Serial;
 
-		public DeviceState State { get => m_deviceData.State; }
+		public DeviceState State => m_deviceData.State;
+
+		public DeviceData Data => m_deviceData;
 
 		public Device(DeviceData deviceData) {
 			m_deviceData = deviceData;
