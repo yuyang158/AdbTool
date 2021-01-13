@@ -50,6 +50,7 @@ namespace AdbGUIClient {
 				using var stream = new FileStream(task.Item1, FileMode.Open);
 				m_syncService = new SyncService(m_data.CurrentClient, m_data.SelectedDeviceData);
 				m_syncService.Push(stream, task.Item2, 666, DateTime.Now, null, CancellationToken.None);
+				m_syncService.Dispose();
 			}
 		}
 

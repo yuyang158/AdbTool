@@ -15,7 +15,8 @@ namespace AdbGUIClient {
 			typeof(BasicInfo),
 			typeof(CpuInfo),
 			typeof(RemoteApkInstall),
-			typeof(LuaUpload)
+			typeof(LuaUpload),
+			typeof(LogView)
 		};
 
 		private const string CONFIG_PATH = "./save.xml";
