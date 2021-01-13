@@ -1,6 +1,11 @@
-﻿using System;
+﻿using SharpAdbClient;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using TreeViewFileExplorer.ShellClasses;
@@ -11,16 +16,56 @@ namespace AdbGUIClient {
 	/// </summary>
 	public partial class LuaUpload : UserControl, ISubControlPanel {
 		private AppData m_data;
+		private Thread m_uploadThread;
+		private Semaphore m_uploadWait = new Semaphore(0, 10000);
+
 		public LuaUpload() {
 			InitializeComponent();
+			m_uploadThread = new Thread(Upload);
+			m_uploadThread.Start();
+		}
+
+		private int m_uploadTaskCount;
+		private int m_totalTaskCount;
+
+		private void Upload() {
+			while (true) {
+				m_uploadWait.WaitOne();
+				Tuple<string, string> task = null;
+				lock (uploadTasks) {
+					task = uploadTasks[0];
+					uploadTasks.RemoveAt(0);
+				}
+
+				m_uploadTaskCount++;
+				Dispatcher.Invoke(() => {
+					if(m_uploadTaskCount >= m_totalTaskCount) {
+						spProgress.Visibility = Visibility.Collapsed;
+						MessageBox.Show("Upload Finished");
+					}
+					tbUploadItem.Text = $"{Path.GetFileName(task.Item1)} {m_uploadTaskCount} / {m_totalTaskCount}";
+					pbUpload.Value = (double)m_uploadTaskCount / m_totalTaskCount;
+				});
+
+				using var stream = new FileStream(task.Item1, FileMode.Open);
+				m_syncService = new SyncService(m_data.CurrentClient, m_data.SelectedDeviceData);
+				m_syncService.Push(stream, task.Item2, 666, DateTime.Now, null, CancellationToken.None);
+			}
 		}
 
 		public void AssignAppData(AppData data) {
 			m_data = data;
+			m_data.SelectionChanged += SelectDevice_SelectionChanged;
 			if (string.IsNullOrEmpty(m_data.LuaRootPath))
 				return;
 			txtLuaRoot.Text = m_data.LuaRootPath;
 			BuildRootPath();
+		}
+
+		private SyncService m_syncService;
+
+		private void SelectDevice_SelectionChanged(Device device) {
+
 		}
 
 		public string GetName() {
@@ -40,17 +85,57 @@ namespace AdbGUIClient {
 			if (!Directory.Exists(txtLuaRoot.Text)) {
 				return;
 			}
-			treeView.Items.Clear();
+			tvLua.Items.Clear();
 			var fileSystemObject = new FileSystemObjectInfo(new DirectoryInfo(txtLuaRoot.Text));
 			fileSystemObject.BeforeExplore += FileSystemObject_BeforeExplore;
 			fileSystemObject.AfterExplore += FileSystemObject_AfterExplore;
-			treeView.Items.Add(fileSystemObject);
+			tvLua.Items.Add(fileSystemObject);
 			fileSystemObject.IsExpanded = true;
 		}
 
 		private void ApplyLuaRoot_Click(object sender, System.Windows.RoutedEventArgs e) {
 			BuildRootPath();
 			m_data.LuaRootPath = txtLuaRoot.Text;
+		}
+
+		private List<Tuple<string, string>> uploadTasks = new List<Tuple<string, string>>();
+
+		private void UploadFile(string localPath, string remotePath) {
+			lock (uploadTasks) {
+				uploadTasks.Add(new Tuple<string, string>(localPath, remotePath));
+			}
+			m_uploadWait.Release();
+		}
+
+		private void UploadLua_Click(object sender, System.Windows.RoutedEventArgs e) {
+			if (m_data.SelectedDevice == null)
+				return;
+
+			if (tvLua.SelectedItem == null)
+				return;
+
+			var root = tvLua.Items[0] as FileSystemObjectInfo;
+			var rootFileName = root.FileSystemInfo.FullName;
+			var info = tvLua.SelectedItem as FileSystemObjectInfo;
+			var fullName = info.FileSystemInfo.FullName;
+			var socket = new AdbSocket(new IPEndPoint(IPAddress.Loopback, AdbClient.AdbServerPort));
+			var remoteRoot = $"/sdcard/Android/data/{m_data.PackageName}/files/Lua";
+			var maskValue = (int)(info.FileSystemInfo.Attributes & FileAttributes.Directory);
+			if (maskValue != 0) {
+				var files = Directory.GetFiles(fullName, "*.lua", SearchOption.AllDirectories);
+				m_totalTaskCount = files.Length;
+				foreach (var file in files) {
+					var subPath = file[rootFileName.Length..].Replace('\\', '/');
+					UploadFile(file, remoteRoot + subPath);
+				}
+			}
+			else {
+				m_totalTaskCount = 1;
+				var subPath = fullName[rootFileName.Length..].Replace('\\', '/');
+				UploadFile(fullName, remoteRoot + subPath);
+			}
+			m_uploadTaskCount = 0;
+			spProgress.Visibility = Visibility.Visible;
 		}
 	}
 }

@@ -27,17 +27,9 @@
                     Margin="5,0,0,0"
                     Click="ApplyLuaRoot_Click">Apply</Button>
         </Grid>
-        <TreeView Name="treeView"
+        <TreeView Name="tvLua"
                   Grid.Row="1"
                   Margin="5">
-            <TreeView.ItemContainerStyle>
-                <Style TargetType="{x:Type TreeViewItem}">
-                    <Setter Property="IsExpanded"
-                            Value="{Binding IsExpanded, Mode=TwoWay}" />
-                    <Setter Property="KeyboardNavigation.AcceptsReturn"
-                            Value="True" />
-                </Style>
-            </TreeView.ItemContainerStyle>
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type classes:FileSystemObjectInfo}"
                                           ItemsSource="{Binding Path=Children}">
@@ -47,7 +39,34 @@
                         <TextBlock Text="{Binding Path=FileSystemInfo.Name}"></TextBlock>
                     </StackPanel>
                 </HierarchicalDataTemplate>
+                <ContextMenu x:Key="UploadContext"
+                             StaysOpen="true">
+                    <MenuItem Header="Upload"
+                              Click="UploadLua_Click" />
+                </ContextMenu>
             </TreeView.Resources>
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsExpanded"
+                            Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="KeyboardNavigation.AcceptsReturn"
+                            Value="True" />
+                    <Setter Property="ContextMenu"
+                            Value="{StaticResource UploadContext}" />
+                </Style>
+            </TreeView.ItemContainerStyle>
         </TreeView>
+        <StackPanel Orientation="Vertical"
+                    Visibility="Collapsed"
+                    x:Name="spProgress"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Grid.Row="1">
+            <TextBlock x:Name="tbUploadItem"></TextBlock>
+            <ProgressBar Width="200"
+                         Height="30"
+                         Name="pbUpload"
+                         Maximum="1"></ProgressBar>
+        </StackPanel>
     </Grid>
 </UserControl>

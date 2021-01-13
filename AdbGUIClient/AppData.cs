@@ -37,6 +37,17 @@ namespace AdbGUIClient {
 
 		public string LuaRootPath { get; set; }
 
+		public string PackageName {
+			get { return (string)GetValue(PackageNameProperty); }
+			set { SetValue(PackageNameProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for PackageName.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty PackageNameProperty =
+			DependencyProperty.Register("PackageName", typeof(string), typeof(AppData), new PropertyMetadata(""));
+
+
+
 		private Thread m_monitorThread;
 		private DeviceMonitor m_monitor;
 
@@ -80,11 +91,15 @@ namespace AdbGUIClient {
 		public ObservableCollection<Device> Devices { get; } = new ObservableCollection<Device>();
 
 		[XmlIgnore]
+		public DeviceData SelectedDeviceData { get; private set; }
+
+		[XmlIgnore]
 		public Device SelectedDevice {
 			get { return (Device)GetValue(SelectedDeviceProperty); }
 			set { 
 				SetValue(SelectedDeviceProperty, value);
 				SelectionChanged?.Invoke(SelectedDevice);
+				SelectedDeviceData = value.Data;
 			}
 		}
 
