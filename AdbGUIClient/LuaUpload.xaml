@@ -12,6 +12,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"></RowDefinition>
             <RowDefinition></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid Margin="5">
             <Grid.ColumnDefinitions>
@@ -67,6 +68,12 @@
                          Height="30"
                          Name="pbUpload"
                          Maximum="1"></ProgressBar>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal"
+                    Margin="5"
+                    HorizontalAlignment="Right"
+                    Grid.Row="2">
+            <Button Click="ClearRemoteFolder_Click" Width="200">Clear Remote Lua Directory</Button>
         </StackPanel>
     </Grid>
 </UserControl>

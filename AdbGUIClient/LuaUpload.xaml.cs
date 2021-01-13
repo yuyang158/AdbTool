@@ -93,7 +93,7 @@ namespace AdbGUIClient {
 			fileSystemObject.IsExpanded = true;
 		}
 
-		private void ApplyLuaRoot_Click(object sender, System.Windows.RoutedEventArgs e) {
+		private void ApplyLuaRoot_Click(object sender, RoutedEventArgs e) {
 			BuildRootPath();
 			m_data.LuaRootPath = txtLuaRoot.Text;
 		}
@@ -107,7 +107,7 @@ namespace AdbGUIClient {
 			m_uploadWait.Release();
 		}
 
-		private void UploadLua_Click(object sender, System.Windows.RoutedEventArgs e) {
+		private void UploadLua_Click(object sender, RoutedEventArgs e) {
 			if (m_data.SelectedDevice == null)
 				return;
 
@@ -136,6 +136,26 @@ namespace AdbGUIClient {
 			}
 			m_uploadTaskCount = 0;
 			spProgress.Visibility = Visibility.Visible;
+		}
+
+		private class CmdRecv : IShellOutputReceiver {
+			public bool ParsesErrors => throw new NotImplementedException();
+
+			public void AddOutput(string line) {
+				Console.WriteLine(line);
+			}
+
+			public void Flush() {
+				MessageBox.Show("Clear Success");
+			}
+		}
+
+		private void ClearRemoteFolder_Click(object sender, RoutedEventArgs e) {
+			if (m_data.SelectedDevice == null)
+				return;
+
+			m_data.CurrentClient.ExecuteRemoteCommandAsync($"rm -rf /sdcard/Android/data/{m_data.PackageName}/files/Lua",
+				m_data.SelectedDeviceData, new CmdRecv(), CancellationToken.None);
 		}
 	}
 }
