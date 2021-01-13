@@ -5,8 +5,10 @@ using System.Net;
 using System.Windows;
 using System.Threading;
 using System;
+using System.Xml.Serialization;
 
 namespace AdbGUIClient {
+	[Serializable]
 	public class AppData : DependencyObject {
 		private AdbClient m_client;
 		public AdbClient CurrentClient => m_client;
@@ -32,6 +34,8 @@ namespace AdbGUIClient {
 				}
 			}
 		}
+
+		public string LuaRootPath { get; set; }
 
 		private Thread m_monitorThread;
 		private DeviceMonitor m_monitor;
@@ -71,10 +75,11 @@ namespace AdbGUIClient {
 		public static readonly DependencyProperty AdbPathProperty =
 			DependencyProperty.Register("AdbPath", typeof(string), typeof(AppData), new PropertyMetadata(""));
 
+		[XmlIgnore]
+		[field: NonSerialized]
 		public ObservableCollection<Device> Devices { get; } = new ObservableCollection<Device>();
 
-
-
+		[XmlIgnore]
 		public Device SelectedDevice {
 			get { return (Device)GetValue(SelectedDeviceProperty); }
 			set { 
@@ -91,6 +96,10 @@ namespace AdbGUIClient {
 			if (m_monitor == null)
 				return;
 			m_monitor.Dispose();
+		}
+
+		public void TriggerDeviceChanged() {
+			SelectionChanged?.Invoke(SelectedDevice);
 		}
 	}
 }

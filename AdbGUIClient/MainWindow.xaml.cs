@@ -1,31 +1,37 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Xml.Serialization;
 
 namespace AdbGUIClient {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : Window {
-		private readonly AppData m_data = new AppData();
-		private Type[] m_subControlTypes = new[] {
-			typeof(BasicInfo)
+		private AppData m_data;
+		private readonly Type[] m_subControlTypes = new[] {
+			typeof(BasicInfo),
+			typeof(CpuInfo),
+			typeof(RemoteApkInstall),
+			typeof(LuaUpload)
 		};
+
+		private const string CONFIG_PATH = "./save.xml";
 
 		public MainWindow() {
 			InitializeComponent();
+			if (File.Exists(CONFIG_PATH)) {
+				using (var reader = new StreamReader(CONFIG_PATH)) {
+					XmlSerializer sl = new XmlSerializer(typeof(AppData));
+					m_data = sl.Deserialize(reader) as AppData;
+				}
+			}
+			else {
+				m_data = new AppData();
+			}
+
 			foreach (var type in m_subControlTypes) {
 				var panel = Activator.CreateInstance(type) as ISubControlPanel;
 				panel.AssignAppData(m_data);
@@ -40,9 +46,14 @@ namespace AdbGUIClient {
 
 			DataContext = m_data;
 			Closing += MainWindow_Closing;
+			m_data.TriggerDeviceChanged();
 		}
 
 		private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			XmlSerializer sl = new XmlSerializer(typeof(AppData));
+			using (var stream = new StreamWriter(CONFIG_PATH)) {
+				sl.Serialize(stream, m_data);
+			}
 			m_data.Exit();
 		}
 
@@ -50,12 +61,12 @@ namespace AdbGUIClient {
 			OpenFileDialog dlg = new OpenFileDialog();
 			dlg.Filter = "Android Debug Bridge|*exe";
 			if (dlg.ShowDialog() == true) {
-				m_data.AdbPath = dlg.FileName;	
+				m_data.AdbPath = dlg.FileName;
 			}
 		}
 
 		private void tcControlContainer_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-			
+
 		}
 	}
 }

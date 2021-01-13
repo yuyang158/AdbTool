@@ -17,29 +17,6 @@ namespace AdbGUIClient {
 			m_data = data;
 		}
 
-		private class InfoReceiver : IShellOutputReceiver {
-			public bool ParsesErrors => false;
-			public StringBuilder Output = new StringBuilder();
-			private BasicInfo m_panel;
-			private string m_title;
-
-			public InfoReceiver(BasicInfo panel, string title) {
-				m_panel = panel;
-				m_title = title;
-			}
-
-			public void AddOutput(string line) {
-				Output.AppendLine(line);
-			}
-
-			public void Flush() {
-				m_panel.Dispatcher.Invoke(() => {
-					m_panel.m_deviceDetailBuilder.Append($"{m_title} : {Output}");
-					m_panel.txtDeviceDetail.Text = m_panel.m_deviceDetailBuilder.ToString();
-				});
-			}
-		}
-
 		private void Data_SelectionChanged(Device device) {
 			if(device == null) {
 				txtDeviceDetail.Text = "No device is selected.";
@@ -52,11 +29,11 @@ namespace AdbGUIClient {
 				m_deviceDetailBuilder.AppendLine($"Product : {device.Data.Product}");
 
 				CancellationToken token = new CancellationToken();
-				m_data.CurrentClient.ExecuteRemoteCommandAsync("wm size", device.Data, new InfoReceiver(this, "Screen"), token);
-				m_data.CurrentClient.ExecuteRemoteCommandAsync("wm density", device.Data, new InfoReceiver(this, "Density"), token);
-				m_data.CurrentClient.ExecuteRemoteCommandAsync("getprop ro.build.version.release", device.Data, new InfoReceiver(this, "OS"), token);
-				m_data.CurrentClient.ExecuteRemoteCommandAsync("ifconfig | grep Mask", device.Data, new InfoReceiver(this, "IP"), token);
-				m_data.CurrentClient.ExecuteRemoteCommandAsync("cat /proc/cpuinfo", device.Data, new InfoReceiver(this, "CPU"), token);
+				m_data.CurrentClient.ExecuteRemoteCommandAsync("wm size", device.Data, new InfoReceiver(txtDeviceDetail, "Screen"), token);
+				m_data.CurrentClient.ExecuteRemoteCommandAsync("wm density", device.Data, new InfoReceiver(txtDeviceDetail, "Density"), token);
+				m_data.CurrentClient.ExecuteRemoteCommandAsync("getprop ro.build.version.release", device.Data, new InfoReceiver(txtDeviceDetail, "OS"), token);
+				m_data.CurrentClient.ExecuteRemoteCommandAsync("ifconfig | grep Mask", device.Data, new InfoReceiver(txtDeviceDetail, "Network"), token);
+				m_data.CurrentClient.ExecuteRemoteCommandAsync("getprop dalvik.vm.heapsize", device.Data, new InfoReceiver(txtDeviceDetail, "Heap Size"), token);
 
 
 				txtDeviceDetail.Text = m_deviceDetailBuilder.ToString();
