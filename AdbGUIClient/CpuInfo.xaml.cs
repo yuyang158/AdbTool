@@ -18,6 +18,8 @@ namespace AdbGUIClient {
 		}
 
 		private void Device_SelectionChanged(Device device) {
+			if (device == null)
+				return;
 			CancellationToken token = new CancellationToken();
 			m_data.CurrentClient.ExecuteRemoteCommandAsync("cat /proc/cpuinfo", device.Data, new InfoReceiver(txtCpuDetail, "CPU"), token);
 		}
