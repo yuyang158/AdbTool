@@ -18,20 +18,24 @@ namespace AdbGUIClient {
 			get { return (string)GetValue(AdbPathProperty); }
 			set {
 				SetValue(AdbPathProperty, value);
-				AdbServer server = new AdbServer();
-				if (!server.GetStatus().IsRunning) {
-					server.StartServer(value, false);
-				}
+				Refresh();
+			}
+		}
 
-				m_client = new AdbClient();
-				StartMonitor();
-				foreach (var deviceData in m_client.GetDevices()) {
-					Devices.Add(new Device(deviceData));
-				}
+		public void Refresh() {
+			AdbServer server = new AdbServer();
+			if (!server.GetStatus().IsRunning) {
+				server.StartServer(AdbPath, false);
+			}
 
-				if (Devices.Count > 0) {
-					SelectedDevice = Devices[0];
-				}
+			m_client = new AdbClient();
+			StartMonitor();
+			foreach (var deviceData in m_client.GetDevices()) {
+				Devices.Add(new Device(deviceData));
+			}
+
+			if (Devices.Count > 0) {
+				SelectedDevice = Devices[0];
 			}
 		}
 
@@ -52,11 +56,11 @@ namespace AdbGUIClient {
 		private DeviceMonitor m_monitor;
 
 		private void StartMonitor() {
-			m_monitor = new DeviceMonitor(new AdbSocket(new IPEndPoint(IPAddress.Loopback, AdbClient.AdbServerPort)));
-			m_monitor.DeviceConnected += this.OnDeviceConnected;
-			m_monitor.DeviceDisconnected += DeviceDisconnected;
-			m_monitorThread = new Thread(m_monitor.Start);
-			m_monitorThread.Start();
+			//m_monitor = new DeviceMonitor(new AdbSocket(new IPEndPoint(IPAddress.Loopback, AdbClient.AdbServerPort)));
+			//m_monitor.DeviceConnected += this.OnDeviceConnected;
+			//m_monitor.DeviceDisconnected += DeviceDisconnected;
+			// m_monitorThread = new Thread(m_monitor.Start);
+			// m_monitorThread.Start();
 			// monitor.Start();
 		}
 

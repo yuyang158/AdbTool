@@ -18,11 +18,24 @@ namespace AdbGUIClient {
 		private AppData m_data;
 		private Thread m_uploadThread;
 		private Semaphore m_uploadWait = new Semaphore(0, 10000);
+		private bool m_closing;
 
 		public LuaUpload() {
 			InitializeComponent();
 			m_uploadThread = new Thread(Upload);
 			m_uploadThread.Start();
+
+			Loaded += LuaUpload_Loaded;
+		}
+
+		private void LuaUpload_Loaded(object sender, RoutedEventArgs e) {
+			var main = Window.GetWindow(this);
+			main.Closing += Main_Closing;
+		}
+
+		private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+			m_closing = true;
+			m_uploadWait.Release();
 		}
 
 		private int m_uploadTaskCount;
@@ -31,6 +44,9 @@ namespace AdbGUIClient {
 		private void Upload() {
 			while (true) {
 				m_uploadWait.WaitOne();
+				if (m_closing)
+					break;
+
 				Tuple<string, string> task = null;
 				lock (uploadTasks) {
 					task = uploadTasks[0];

@@ -32,7 +32,7 @@ namespace AdbGUIClient {
 
 			try {
 				PackageManager manager = new PackageManager(m_data.CurrentClient, m_data.SelectedDevice.Data);
-				manager.InstallPackage(filename, false);
+				manager.InstallPackage(filename, true);
 			}
 			catch (Exception ex) {
 				txtLog.AppendText($"Install fail : {ex.Message}");

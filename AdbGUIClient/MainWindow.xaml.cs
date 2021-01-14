@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml.Serialization;
@@ -68,6 +69,23 @@ namespace AdbGUIClient {
 
 		private void tcControlContainer_SelectionChanged(object sender, SelectionChangedEventArgs e) {
 
+		}
+
+		private void ApplyForward_Click(object sender, RoutedEventArgs e) {
+			var task = m_data.CurrentClient.ExecuteRemoteCommandAsync($"forward tcp:34999 localabstract:Unity-{m_data.PackageName}", 
+				m_data.SelectedDevice.Data, null, CancellationToken.None);
+			task.Wait();
+		}
+
+		private void Refresh_Click(object sender, RoutedEventArgs e) {
+			m_data.Refresh();
+		}
+
+		private void Capture_Click(object sender, RoutedEventArgs e) {
+			var task = m_data.CurrentClient.GetFrameBufferAsync(m_data.SelectedDevice.Data, CancellationToken.None);
+			task.Wait();
+			var preview = new ImagePreviewWindow(task.Result);
+			preview.Show();
 		}
 	}
 }
