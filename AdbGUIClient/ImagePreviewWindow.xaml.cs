@@ -23,6 +23,7 @@ namespace AdbGUIClient {
 			using (var stream = new FileStream(filename, FileMode.OpenOrCreate)) {
 				sourceImg.Save(stream, ImageFormat.Png);
 			}
+			sourceImg.Dispose();
 			var bitmap = new BitmapImage(new Uri(Path.GetFullPath(filename)));
 			img.Source = bitmap;
 		}
