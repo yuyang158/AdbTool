@@ -84,7 +84,7 @@ namespace AdbGUIClient {
 		private void Capture_Click(object sender, RoutedEventArgs e) {
 			var task = m_data.CurrentClient.GetFrameBufferAsync(m_data.SelectedDevice.Data, CancellationToken.None);
 			task.Wait();
-			var preview = new ImagePreviewWindow(task.Result);
+			var preview = new ImagePreviewWindow(task.Result, m_data.SelectedDevice.DisplayName);
 			preview.Show();
 		}
 	}
