@@ -1,27 +1,24 @@
 ﻿using SharpAdbClient;
+using System;
 using System.Text;
 using System.Windows.Controls;
 
 namespace AdbGUIClient {
 	public class InfoReceiver : IShellOutputReceiver {
 		public bool ParsesErrors => false;
-		public StringBuilder Output = new StringBuilder();
-		private TextBox m_content;
-		private string m_title;
+		private readonly StringBuilder m_builder = new StringBuilder();
 
-		public InfoReceiver(TextBox content, string title) {
-			m_content = content;
-			m_title = title;
+		public event Action<string> Callback;
+
+		public InfoReceiver() {
 		}
 
 		public void AddOutput(string line) {
-			Output.AppendLine(line);
+			m_builder.AppendLine(line);
 		}
 
 		public void Flush() {
-			m_content.Dispatcher.Invoke(() => {
-				m_content.Text += $"{m_title} : \n{Output}";
-			});
+			Callback?.Invoke(m_builder.ToString());
 		}
 	}
 }

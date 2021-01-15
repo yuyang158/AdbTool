@@ -21,6 +21,7 @@
             <TextBlock Grid.Column="0">URL :</TextBlock>
             <TextBox Grid.Column="1"
                      Name="txtUrl"
+                     Text="{Binding Path=DownloadUrl}"
                      Width="Auto"></TextBox>
             <Button x:Name="btnInstall"
                     Grid.Column="2"

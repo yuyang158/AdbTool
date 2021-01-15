@@ -14,7 +14,7 @@ namespace AdbGUIClient {
 			InitializeComponent();
 			Width = sourceImg.Size.Width;
 			Height = sourceImg.Size.Height;
-			if(!Directory.Exists("Capture")) {
+			if (!Directory.Exists("Capture")) {
 				Directory.CreateDirectory("Capture");
 			}
 

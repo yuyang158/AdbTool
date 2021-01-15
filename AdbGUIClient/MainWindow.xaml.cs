@@ -60,8 +60,9 @@ namespace AdbGUIClient {
 		}
 
 		private void SelectAdb_Click(object sender, RoutedEventArgs e) {
-			OpenFileDialog dlg = new OpenFileDialog();
-			dlg.Filter = "Android Debug Bridge|*exe";
+			OpenFileDialog dlg = new OpenFileDialog {
+				Filter = "Android Debug Bridge|*exe"
+			};
 			if (dlg.ShowDialog() == true) {
 				m_data.AdbPath = dlg.FileName;
 			}
@@ -72,7 +73,7 @@ namespace AdbGUIClient {
 		}
 
 		private void ApplyForward_Click(object sender, RoutedEventArgs e) {
-			var task = m_data.CurrentClient.ExecuteRemoteCommandAsync($"forward tcp:34999 localabstract:Unity-{m_data.PackageName}", 
+			var task = m_data.CurrentClient.ExecuteRemoteCommandAsync($"forward tcp:{txtPort.Text} localabstract:Unity-{m_data.PackageName}", 
 				m_data.SelectedDevice.Data, null, CancellationToken.None);
 			task.Wait();
 		}

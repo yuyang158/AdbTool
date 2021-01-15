@@ -21,7 +21,13 @@ namespace AdbGUIClient {
 			if (device == null)
 				return;
 			CancellationToken token = new CancellationToken();
-			m_data.CurrentClient.ExecuteRemoteCommandAsync("cat /proc/cpuinfo", device.Data, new InfoReceiver(txtCpuDetail, "CPU"), token);
+			var receiver = new InfoReceiver();
+			receiver.Callback += text => {
+				Dispatcher.Invoke(() => {
+					txtCpuDetail.Text = text;
+				});
+			};
+			m_data.CurrentClient.ExecuteRemoteCommandAsync("cat /proc/cpuinfo", device.Data, receiver, token);
 		}
 
 		public string GetName() {

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Windows;
@@ -16,8 +15,8 @@ namespace AdbGUIClient {
 	/// </summary>
 	public partial class LuaUpload : UserControl, ISubControlPanel {
 		private AppData m_data;
-		private Thread m_uploadThread;
-		private Semaphore m_uploadWait = new Semaphore(0, 10000);
+		private readonly Thread m_uploadThread;
+		private readonly Semaphore m_uploadWait = new Semaphore(0, 10000);
 		private bool m_closing;
 
 		public LuaUpload() {

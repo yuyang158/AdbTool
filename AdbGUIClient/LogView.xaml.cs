@@ -34,7 +34,7 @@ namespace AdbGUIClient {
 		private void PullFile(string remoteRoot) {
 			try {
 				var service = new SyncService(m_data.CurrentClient, m_data.SelectedDeviceData);
-				using var stream = new FileStream("./pull.log", FileMode.OpenOrCreate);
+				using var stream = new FileStream("./pull.log", FileMode.Create);
 				service.Pull(remoteRoot, stream, null, CancellationToken.None);
 				service.Dispose();
 				stream.Seek(0, SeekOrigin.Begin);

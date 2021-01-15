@@ -56,8 +56,9 @@
                      Text="{Binding Path=PackageName}"
                      Margin="5,0,0,0"></TextBox>
             <TextBlock Grid.Column="2" Margin="5,0,0,0">Forward :</TextBlock>
-            <TextBox Text="39999"
+            <TextBox Text="34999"
                      Grid.Column="3"
+                     Name="txtPort"
                      Margin="5,0,0,0"></TextBox>
             <Button Click="ApplyForward_Click"
                     Width="80"

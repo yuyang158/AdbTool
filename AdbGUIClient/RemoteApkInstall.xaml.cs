@@ -1,7 +1,9 @@
-﻿using SharpAdbClient.DeviceCommands;
+﻿using SharpAdbClient;
+using SharpAdbClient.DeviceCommands;
 using System;
 using System.IO;
 using System.Net;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -18,10 +20,29 @@ namespace AdbGUIClient {
 		private AppData m_data;
 		public void AssignAppData(AppData data) {
 			m_data = data;
+			DataContext = data;
 		}
 
 		public string GetName() {
 			return "Apk Install";
+		}
+
+		private class ShellResponseToLog : IShellOutputReceiver {
+			public bool ParsesErrors => false;
+
+			private TextBox m_txtOutput;
+			public ShellResponseToLog(TextBox output) {
+				m_txtOutput = output;
+			}
+
+			public void AddOutput(string line) {
+				m_txtOutput.Dispatcher.Invoke(() => {
+					m_txtOutput.AppendText(line);
+				});
+			}
+
+			public void Flush() {
+			}
 		}
 
 		private void InstallFile(string filename) {
@@ -33,6 +54,8 @@ namespace AdbGUIClient {
 			try {
 				PackageManager manager = new PackageManager(m_data.CurrentClient, m_data.SelectedDevice.Data);
 				manager.InstallPackage(filename, true);
+				m_data.CurrentClient.ExecuteRemoteCommandAsync($"am start -n {m_data.PackageName}/com.unity3d.player.UnityPlayerActivity", m_data.SelectedDeviceData,
+					new ShellResponseToLog(txtLog), CancellationToken.None);
 			}
 			catch (Exception ex) {
 				txtLog.AppendText($"Install fail : {ex.Message}");
@@ -40,7 +63,7 @@ namespace AdbGUIClient {
 		}
 
 		private async void btnInstall_ClickAsync(object sender, RoutedEventArgs e) {
-			var uri = new Uri(txtUrl.Text);
+			var uri = new Uri(m_data.DownloadUrl);
 			if (Path.GetExtension(uri.LocalPath) != ".apk") {
 				return;
 			}
@@ -53,9 +76,6 @@ namespace AdbGUIClient {
 
 			var req = WebRequest.Create(uri);
 			var response = await req.GetResponseAsync();
-			foreach (var item in response.Headers) {
-				Console.WriteLine(item);
-			}
 			var fileSize = response.ContentLength;
 
 			if (!Directory.Exists("./ApkDownload")) {

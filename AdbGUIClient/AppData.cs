@@ -1,9 +1,7 @@
 ﻿using SharpAdbClient;
 using System.Linq;
 using System.Collections.ObjectModel;
-using System.Net;
 using System.Windows;
-using System.Threading;
 using System;
 using System.Xml.Serialization;
 
@@ -52,8 +50,18 @@ namespace AdbGUIClient {
 
 
 
-		private Thread m_monitorThread;
-		private DeviceMonitor m_monitor;
+		public string DownloadUrl {
+			get { return (string)GetValue(DownloadUrlProperty); }
+			set { SetValue(DownloadUrlProperty, value); }
+		}
+
+		// Using a DependencyProperty as the backing store for DownloadUrl.  This enables animation, styling, binding, etc...
+		public static readonly DependencyProperty DownloadUrlProperty =
+			DependencyProperty.Register("DownloadUrl", typeof(string), typeof(AppData), new PropertyMetadata(""));
+
+
+		// private Thread m_monitorThread;
+		// private DeviceMonitor m_monitor;
 
 		private void StartMonitor() {
 			//m_monitor = new DeviceMonitor(new AdbSocket(new IPEndPoint(IPAddress.Loopback, AdbClient.AdbServerPort)));
@@ -112,9 +120,9 @@ namespace AdbGUIClient {
 			DependencyProperty.Register("SelectedDevice", typeof(Device), typeof(AppData), new PropertyMetadata(null));
 
 		public void Exit() {
-			if (m_monitor == null)
-				return;
-			m_monitor.Dispose();
+			// if (m_monitor == null)
+				// return;
+			// m_monitor.Dispose();
 		}
 
 		public void TriggerDeviceChanged() {
