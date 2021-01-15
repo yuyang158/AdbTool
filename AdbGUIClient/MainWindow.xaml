@@ -66,8 +66,7 @@
                     Grid.Column="4">Apply</Button>
         </Grid>
         <Grid Grid.Row="2">
-            <TabControl x:Name="tcControlContainer"
-                        SelectionChanged="tcControlContainer_SelectionChanged">
+            <TabControl x:Name="tcControlContainer">
             </TabControl>
         </Grid>
     </Grid>

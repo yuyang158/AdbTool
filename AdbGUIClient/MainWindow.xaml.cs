@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using SharpAdbClient;
 using System;
 using System.IO;
 using System.Threading;
@@ -68,14 +69,22 @@ namespace AdbGUIClient {
 			}
 		}
 
-		private void tcControlContainer_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-
-		}
-
 		private void ApplyForward_Click(object sender, RoutedEventArgs e) {
-			var task = m_data.CurrentClient.ExecuteRemoteCommandAsync($"forward tcp:{txtPort.Text} localabstract:Unity-{m_data.PackageName}", 
-				m_data.SelectedDevice.Data, null, CancellationToken.None);
-			task.Wait();
+			var localSpec = new ForwardSpec {
+				Protocol = ForwardProtocol.Tcp,
+				Port = int.Parse(txtPort.Text)
+			};
+
+			var remoteSpec = new ForwardSpec {
+				Protocol = ForwardProtocol.LocalAbstract,
+				SocketName = "Unity-" + m_data.PackageName
+			};
+
+			var port = m_data.CurrentClient.CreateForward(m_data.SelectedDeviceData, localSpec, remoteSpec, true);
+			if (port == 0) {
+				return;
+			}
+			MessageBox.Show($"Forward : {port}");
 		}
 
 		private void Refresh_Click(object sender, RoutedEventArgs e) {
