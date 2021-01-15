@@ -26,10 +26,9 @@ namespace AdbGUIClient {
 		public MainWindow() {
 			InitializeComponent();
 			if (File.Exists(CONFIG_PATH)) {
-				using (var reader = new StreamReader(CONFIG_PATH)) {
-					XmlSerializer sl = new XmlSerializer(typeof(AppData));
-					m_data = sl.Deserialize(reader) as AppData;
-				}
+				using var reader = new StreamReader(CONFIG_PATH);
+				XmlSerializer sl = new XmlSerializer(typeof(AppData));
+				m_data = sl.Deserialize(reader) as AppData;
 			}
 			else {
 				m_data = new AppData();

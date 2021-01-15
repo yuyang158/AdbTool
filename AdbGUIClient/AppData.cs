@@ -38,10 +38,12 @@ namespace AdbGUIClient {
 		}
 
 		public string LuaRootPath { get; set; }
+		[XmlIgnore, NonSerialized]
+		public string Package;
 
 		public string PackageName {
 			get { return (string)GetValue(PackageNameProperty); }
-			set { SetValue(PackageNameProperty, value); }
+			set { SetValue(PackageNameProperty, value); Package = value; }
 		}
 
 		// Using a DependencyProperty as the backing store for PackageName.  This enables animation, styling, binding, etc...
@@ -108,10 +110,13 @@ namespace AdbGUIClient {
 		[XmlIgnore]
 		public Device SelectedDevice {
 			get { return (Device)GetValue(SelectedDeviceProperty); }
-			set { 
+			set {
 				SetValue(SelectedDeviceProperty, value);
 				SelectionChanged?.Invoke(SelectedDevice);
 				SelectedDeviceData = value.Data;
+				if (value == null) {
+					m_client = null;
+				}
 			}
 		}
 
@@ -121,7 +126,7 @@ namespace AdbGUIClient {
 
 		public void Exit() {
 			// if (m_monitor == null)
-				// return;
+			// return;
 			// m_monitor.Dispose();
 		}
 
