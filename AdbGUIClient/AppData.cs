@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System;
 using System.Xml.Serialization;
+using System.IO;
 
 namespace AdbGUIClient {
 	[Serializable]
@@ -21,6 +22,10 @@ namespace AdbGUIClient {
 		}
 
 		public void Refresh() {
+			if(!File.Exists(AdbPath)) {
+				return;
+			}
+
 			AdbServer server = new AdbServer();
 			if (!server.GetStatus().IsRunning) {
 				server.StartServer(AdbPath, false);

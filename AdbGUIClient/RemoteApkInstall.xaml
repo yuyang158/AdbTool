@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:AdbGUIClient"
+             AllowDrop="True"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800">
@@ -21,16 +22,15 @@
             <TextBlock Grid.Column="0">URL :</TextBlock>
             <TextBox Grid.Column="1"
                      Name="txtUrl"
-                     Text="{Binding Path=DownloadUrl}"
+                     Text="{Binding Path=DownloadUrl, Mode=TwoWay}"
                      Width="Auto"></TextBox>
             <Button x:Name="btnInstall"
                     Grid.Column="2"
                     Margin="5,0,0,0"
                     Click="btnInstall_ClickAsync">Install</Button>
         </Grid>
-        <TextBox IsReadOnly="True"
-                 Grid.Row="1"
-                 Name="txtLog"></TextBox>
+        <TextBlock Grid.Row="1"
+                   Name="txtLog"></TextBlock>
         <StackPanel Grid.Row="1"
                     Name="spProgress"
                     Orientation="Vertical"
