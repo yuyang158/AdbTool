@@ -53,6 +53,20 @@ namespace AdbGUIClient {
 
 			proc.Start();
 			LogInstall(proc);
+			proc.Exited += Proc_Exited;
+		}
+
+		private void Proc_Exited(object sender, EventArgs e) {
+			var proc = new Process {
+				StartInfo = new ProcessStartInfo {
+					FileName = "tidevice",
+					Arguments = $"--udid {m_data.SelectedDevice.UUID} launch {m_data.BundleID}",
+					UseShellExecute = false,
+					RedirectStandardOutput = true,
+					CreateNoWindow = true
+				}
+			};
+			proc.Start();
 		}
 
 		private async void btnInstall_Click(object sender, RoutedEventArgs e) {
