@@ -24,9 +24,9 @@ namespace AdbGUIClient {
 		}
 
 		private void LogInstall(Process proc) {
-			txtLog.Dispatcher.Invoke(() => {
+			txtLog.Dispatcher.Invoke(async () => {
 				while (!proc.StandardOutput.EndOfStream) {
-					string line = proc.StandardOutput.ReadLine();
+					string line = await proc.StandardOutput.ReadLineAsync();
 					txtLog.Text += line + "\n";
 				}
 
