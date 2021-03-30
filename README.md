@@ -20,3 +20,13 @@
 ## 日志查看 (Log View)
 
 ## 截图
+
+## 安装IPA(IPA Install)
+
+1. 需要安装Python3.6以上版本
+2. 安装pip3 install -U "tidevice[openssl]"
+
+
+## 依赖
+1. [tidevice](https://github.com/alibaba/taobao-iphone-device)
+2. [madb](https://github.com/quamotion/madb) [LICENSE](https://github.com/quamotion/madb/blob/master/LICENSE)
