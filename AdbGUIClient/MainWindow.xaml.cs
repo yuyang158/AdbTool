@@ -2,17 +2,12 @@
 using SharpAdbClient;
 using System;
 using System.IO;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml.Serialization;
 
 namespace AdbGUIClient {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
 	public partial class MainWindow : Window {
-		private AppData m_data;
 		private readonly Type[] m_subControlTypes = new[] {
 			typeof(BasicInfo),
 			typeof(CpuInfo),
@@ -22,41 +17,77 @@ namespace AdbGUIClient {
 		};
 
 		private const string CONFIG_PATH = "./save.xml";
+		private ISubControlPanel[] m_subPanels;
+
+		private ISubControlPanel CreateSubPanel(Type type) {
+			var panel = Activator.CreateInstance(type) as ISubControlPanel;
+			var tabItem = new TabItem {
+				Header = panel.GetName(),
+				Content = panel
+			};
+			tcControlContainer.Items.Add(tabItem);
+			return panel;
+		}
 
 		public MainWindow() {
 			InitializeComponent();
 			if (File.Exists(CONFIG_PATH)) {
 				using var reader = new StreamReader(CONFIG_PATH);
-				XmlSerializer sl = new XmlSerializer(typeof(AppData));
-				m_data = sl.Deserialize(reader) as AppData;
+				XmlSerializer sl = new XmlSerializer(typeof(GlobalData));
+				try {
+					GlobalData.Instance = sl.Deserialize(reader) as GlobalData;
+				}
+				catch (Exception) {
+					GlobalData.Instance = new GlobalData();
+				}
 			}
 			else {
-				m_data = new AppData();
+				GlobalData.Instance = new GlobalData();
 			}
 
-			foreach (var type in m_subControlTypes) {
-				var panel = Activator.CreateInstance(type) as ISubControlPanel;
-				panel.AssignAppData(m_data);
-
-				var tabItem = new TabItem {
-					Header = panel.GetName(),
-					Content = panel
-				};
-
-				tcControlContainer.Items.Add(tabItem);
+			m_subPanels = new ISubControlPanel[m_subControlTypes.Length];
+			for (int i = 0; i < m_subControlTypes.Length; i++) {
+				var type = m_subControlTypes[i];
+				m_subPanels[i] = CreateSubPanel(type);
 			}
 
-			DataContext = m_data;
+			DataContext = GlobalData.Instance;
 			Closing += MainWindow_Closing;
-			m_data.TriggerDeviceChanged();
+
+			GlobalData.Instance.SelectedDeviceChanged += Instance_SelectedDeviceChanged;
+			RefreshDevice();
+		}
+
+		private void Instance_SelectedDeviceChanged(IDevice device) {
+			foreach (var sub in m_subPanels) {
+				sub.AssignDevice(device);
+			}
+
+			if (device is AndroidDevice) {
+				grdAndroid.Visibility = Visibility.Visible;
+				grdIOS.Visibility = Visibility.Collapsed;
+			}
+			else {
+				grdIOS.Visibility = Visibility.Collapsed;
+				grdAndroid.Visibility = Visibility.Collapsed;
+			}
+		}
+
+		private void RefreshDevice() {
+			if (string.IsNullOrEmpty(GlobalData.Instance.AdbPath)) {
+				return;
+			}
+			GlobalData.Instance.Devices = AndroidDevice.CollectAndroidDevices();
+			if (GlobalData.Instance.Devices.Length > 0) {
+				GlobalData.Instance.SelectedDevice = GlobalData.Instance.Devices[0];
+			}
 		}
 
 		private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			XmlSerializer sl = new XmlSerializer(typeof(AppData));
+			XmlSerializer sl = new XmlSerializer(typeof(GlobalData));
 			using (var stream = new StreamWriter(CONFIG_PATH)) {
-				sl.Serialize(stream, m_data);
+				sl.Serialize(stream, GlobalData.Instance);
 			}
-			m_data.Exit();
 		}
 
 		private void SelectAdb_Click(object sender, RoutedEventArgs e) {
@@ -64,37 +95,24 @@ namespace AdbGUIClient {
 				Filter = "Android Debug Bridge|*exe"
 			};
 			if (dlg.ShowDialog() == true) {
-				m_data.AdbPath = dlg.FileName;
+				GlobalData.Instance.AdbPath = dlg.FileName;
 			}
 		}
 
 		private void ApplyForward_Click(object sender, RoutedEventArgs e) {
-			var localSpec = new ForwardSpec {
-				Protocol = ForwardProtocol.Tcp,
-				Port = int.Parse(txtPort.Text)
-			};
-
-			var remoteSpec = new ForwardSpec {
-				Protocol = ForwardProtocol.LocalAbstract,
-				SocketName = "Unity-" + m_data.PackageName
-			};
-
-			var port = m_data.CurrentClient.CreateForward(m_data.SelectedDeviceData, localSpec, remoteSpec, true);
-			if (port == 0) {
-				return;
-			}
-			MessageBox.Show($"Forward : {port}");
+			var androidDevice = GlobalData.Instance.SelectedDevice as AndroidDevice;
+			androidDevice.Forward(int.Parse(txtPort.Text));
 		}
 
 		private void Refresh_Click(object sender, RoutedEventArgs e) {
-			m_data.Refresh();
+			RefreshDevice();
 		}
 
 		private void Capture_Click(object sender, RoutedEventArgs e) {
-			var task = m_data.CurrentClient.GetFrameBufferAsync(m_data.SelectedDevice.Data, CancellationToken.None);
+			/*var task = m_data.CurrentClient.GetFrameBufferAsync(m_data.SelectedDevice.Data, CancellationToken.None);
 			task.Wait();
 			var preview = new ImagePreviewWindow(task.Result, m_data.SelectedDevice.DisplayName);
-			preview.Show();
+			preview.Show();*/
 		}
 	}
 }

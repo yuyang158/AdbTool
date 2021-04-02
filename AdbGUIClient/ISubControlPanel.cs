@@ -1,8 +1,6 @@
-﻿
-namespace AdbGUIClient {
-	interface ISubControlPanel {
-		void AssignAppData(AppData data);
-
+﻿namespace AdbGUIClient {
+	public interface ISubControlPanel {
+		void AssignDevice(IDevice device);
 		string GetName();
 	}
 }
