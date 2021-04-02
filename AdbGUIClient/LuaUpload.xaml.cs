@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -9,34 +8,15 @@ using TreeViewFileExplorer.ShellClasses;
 
 namespace AdbGUIClient {
 	public partial class LuaUpload : UserControl, ISubControlPanel {
-		private readonly Thread m_uploadThread;
-		private readonly Semaphore m_uploadWait = new Semaphore(0, 10000);
-		private bool m_closing;
-
 		public LuaUpload() {
 			InitializeComponent();
-			Loaded += LuaUpload_Loaded;
 		}
-
-		private void LuaUpload_Loaded(object sender, RoutedEventArgs e) {
-			var main = Window.GetWindow(this);
-			main.Closing += Main_Closing;
-		}
-
-		private void Main_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			m_closing = true;
-			m_uploadWait.Release();
-		}
-
-		private int m_uploadTaskCount;
-		private int m_totalTaskCount;
 
 		private IDevice m_device;
 		public void AssignDevice(IDevice device) {
 			BuildRootPath();
 			m_device = device;
 		}
-
 
 		public string GetName() {
 			return "Lua Upload";
