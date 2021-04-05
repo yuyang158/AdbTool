@@ -8,11 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="iMobileDevice-net" Version="1.3.17" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\SharpAdbClient\SharpAdbClient.csproj" />
+    <PackageReference Include="SharpAdbClient" Version="2.3.23" />
   </ItemGroup>
 
 </Project>

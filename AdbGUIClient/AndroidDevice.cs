@@ -110,6 +110,7 @@ namespace AdbGUIClient {
 			service.Pull(remotePath, stream, null, CancellationToken.None);
 			service.Dispose();
 			stream.Seek(0, SeekOrigin.Begin);
+			service.Dispose();
 			return stream;
 		}
 
@@ -148,6 +149,9 @@ namespace AdbGUIClient {
 
 		public override string ToString() {
 			return m_deviceData.Name;
+		}
+
+		public void Dispose() {
 		}
 	}
 }

@@ -2,7 +2,7 @@
 using System.IO;
 
 namespace AdbGUIClient {
-	public interface IDevice {
+	public interface IDevice : IDisposable {
 		string DeviceInfo { get; }
 
 		string CpuInfo { get; }
