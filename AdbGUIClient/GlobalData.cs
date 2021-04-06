@@ -49,7 +49,7 @@ namespace AdbGUIClient {
 
 		public string AdbPath {
 			get { return (string)GetValue(AdbPathProperty); }
-			set { 
+			set {
 				SetValue(AdbPathProperty, value);
 				AdbServer server = new AdbServer();
 				if (!server.GetStatus().IsRunning) {
@@ -73,15 +73,11 @@ namespace AdbGUIClient {
 		public static readonly DependencyProperty DevicesProperty =
 			DependencyProperty.Register("Devices", typeof(IDevice[]), typeof(GlobalData), new PropertyMetadata(null));
 
-		public event Action<IDevice> SelectedDeviceChanged;
 
 		[XmlIgnore]
 		public IDevice SelectedDevice {
 			get { return (IDevice)GetValue(SelectedDeviceProperty); }
-			set { 
-				SetValue(SelectedDeviceProperty, value);
-				SelectedDeviceChanged?.Invoke(value);
-			}
+			set { SetValue(SelectedDeviceProperty, value); }
 		}
 
 		// Using a DependencyProperty as the backing store for SelectedDevice.  This enables animation, styling, binding, etc...

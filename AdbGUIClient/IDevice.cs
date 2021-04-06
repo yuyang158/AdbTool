@@ -13,7 +13,7 @@ namespace AdbGUIClient {
 
 		void InstallPackage(string localFilePath, Action<string> callback);
 
-		void TakeScreenShot();
+		string TakeScreenShot();
 
 		void Delete(string remotePath);
 	}

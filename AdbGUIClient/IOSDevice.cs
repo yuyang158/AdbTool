@@ -17,7 +17,7 @@ namespace AdbGUIClient {
 			}
 		}
 
-		public string CpuInfo => "";
+		public string CpuInfo => "IOS 无";
 
 		private static string RunCmd(string cmdParam) {
 			ProcessStartInfo start = new ProcessStartInfo {
@@ -85,15 +85,32 @@ namespace AdbGUIClient {
 		}
 
 		public FileStream Pull(string remotePath) {
-			RunCmd("fsync");
+			RunCmd($"--udid {m_deviceUdid} fsync -B \"{GlobalData.Instance.IOSBundleID}\" pull \"/Documents/{remotePath}\"");
+			return new FileStream(remotePath, FileMode.Open);
 		}
 
 		public void Push(string localSourceFile, string remotePath) {
-			throw new NotImplementedException();
+			localSourceFile = localSourceFile.Replace('\\', '/');
+			remotePath = remotePath.Replace('\\', '/');
+
+			var directories = remotePath.Split('/');
+			const string baseDir = "/Documents";
+			var path = baseDir;
+			for (int i = 0; i < directories.Length - 1; i++) {
+				var dirName = directories[i];
+				path += $"/{dirName}";
+				var stat = RunCmd($"--udid {m_deviceUdid} fsync -B \"{GlobalData.Instance.IOSBundleID}\" stat \"{path}\"");
+				if (string.IsNullOrEmpty(stat)) {
+					RunCmd($"--udid {m_deviceUdid} fsync -B \"{GlobalData.Instance.IOSBundleID}\" mkdir \"{path}\"");
+				}
+			}
+
+			RunCmd($"--udid {m_deviceUdid} fsync -B \"{GlobalData.Instance.IOSBundleID}\" push \"{localSourceFile}\" \"/Documents/{remotePath}\"");
 		}
 
-		public void TakeScreenShot() {
-			throw new NotImplementedException();
+		public string TakeScreenShot() {
+			var ret = RunCmd($"--udid {m_deviceUdid} screenshot \"screenshot.png\"");
+			return Path.GetFullPath("screenshot.png");
 		}
 
 		public override string ToString() {

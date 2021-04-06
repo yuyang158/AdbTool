@@ -32,11 +32,11 @@ namespace AdbGUIClient {
 		}
 
 		private void BuildRootPath() {
-			if (!Directory.Exists(txtLuaRoot.Text)) {
+			if (!Directory.Exists(GlobalData.Instance.LuaRootPath)) {
 				return;
 			}
 			tvLua.Items.Clear();
-			var fileSystemObject = new FileSystemObjectInfo(new DirectoryInfo(txtLuaRoot.Text));
+			var fileSystemObject = new FileSystemObjectInfo(new DirectoryInfo(GlobalData.Instance.LuaRootPath));
 			fileSystemObject.BeforeExplore += FileSystemObject_BeforeExplore;
 			fileSystemObject.AfterExplore += FileSystemObject_AfterExplore;
 			tvLua.Items.Add(fileSystemObject);
@@ -50,7 +50,7 @@ namespace AdbGUIClient {
 		private List<Tuple<string, string>> uploadTasks = new List<Tuple<string, string>>();
 
 		private void UploadFile(string localPath, string remotePath) {
-			m_device.Push(localPath, remotePath);
+			m_device.Push(localPath, "Lua/" + remotePath);
 		}
 
 		private void UploadLua_Click(object sender, RoutedEventArgs e) {

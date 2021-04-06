@@ -2,6 +2,7 @@
 using SharpAdbClient;
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xml.Serialization;
@@ -53,12 +54,13 @@ namespace AdbGUIClient {
 
 			DataContext = GlobalData.Instance;
 			Closing += MainWindow_Closing;
+			cbbDevice.SelectionChanged += CbbDevice_SelectionChanged;
 
-			GlobalData.Instance.SelectedDeviceChanged += Instance_SelectedDeviceChanged;
 			RefreshDevice();
 		}
 
-		private void Instance_SelectedDeviceChanged(IDevice device) {
+		private void CbbDevice_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+			var device = cbbDevice.SelectedItem as IDevice;
 			foreach (var sub in m_subPanels) {
 				sub.AssignDevice(device);
 			}
@@ -67,10 +69,25 @@ namespace AdbGUIClient {
 				grdAndroid.Visibility = Visibility.Visible;
 				grdIOS.Visibility = Visibility.Collapsed;
 			}
+			else if (device is IOSDevice) {
+				grdAndroid.Visibility = Visibility.Collapsed;
+				grdIOS.Visibility = Visibility.Visible;
+			}
 			else {
 				grdIOS.Visibility = Visibility.Collapsed;
 				grdAndroid.Visibility = Visibility.Collapsed;
 			}
+		}
+
+		public static T[] Concatenate<T>(T[] first, T[] second) {
+			if (first == null) {
+				return second;
+			}
+			if (second == null) {
+				return first;
+			}
+
+			return first.Concat(second).ToArray();
 		}
 
 		private void RefreshDevice() {
@@ -78,6 +95,8 @@ namespace AdbGUIClient {
 				return;
 			}
 			GlobalData.Instance.Devices = AndroidDevice.CollectAndroidDevices();
+			GlobalData.Instance.Devices = Concatenate(GlobalData.Instance.Devices, IOSDevice.CollectIOSDevices());
+
 			if (GlobalData.Instance.Devices.Length > 0) {
 				GlobalData.Instance.SelectedDevice = GlobalData.Instance.Devices[0];
 			}
@@ -109,10 +128,9 @@ namespace AdbGUIClient {
 		}
 
 		private void Capture_Click(object sender, RoutedEventArgs e) {
-			/*var task = m_data.CurrentClient.GetFrameBufferAsync(m_data.SelectedDevice.Data, CancellationToken.None);
-			task.Wait();
-			var preview = new ImagePreviewWindow(task.Result, m_data.SelectedDevice.DisplayName);
-			preview.Show();*/
+			var path = GlobalData.Instance.SelectedDevice.TakeScreenShot();
+			var preview = new ImagePreviewWindow(path);
+			preview.Show();
 		}
 	}
 }

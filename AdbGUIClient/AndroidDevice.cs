@@ -1,9 +1,11 @@
 ﻿using SharpAdbClient;
 using SharpAdbClient.DeviceCommands;
 using System;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace AdbGUIClient {
@@ -115,7 +117,7 @@ namespace AdbGUIClient {
 		}
 
 		public void Push(string localSourceFile, string remotePath) {
-			remotePath = $"/sdcard/Android/data/{GlobalData.Instance.AndroidPackageName}/files/Lua/{remotePath}";
+			remotePath = $"/sdcard/Android/data/{GlobalData.Instance.AndroidPackageName}/files/{remotePath}";
 			using var stream = new FileStream(localSourceFile, FileMode.Open);
 			var m_syncService = new SyncService(m_client, m_deviceData);
 			m_syncService.Push(stream, remotePath, 666, DateTime.Now, null, CancellationToken.None);
@@ -126,7 +128,14 @@ namespace AdbGUIClient {
 			m_client.ExecuteRemoteCommand($"rm -rf /sdcard/Android/data/{GlobalData.Instance.AndroidPackageName}/files/{remotePath}", m_deviceData, null);
 		}
 
-		public void TakeScreenShot() {
+		public string TakeScreenShot() {
+			var task = m_client.GetFrameBufferAsync(m_deviceData, CancellationToken.None);
+			task.Wait();
+			var image = task.Result;
+			using (var stream = new FileStream("screenshot.png", FileMode.OpenOrCreate)) {
+				image.Save(stream, ImageFormat.Png);
+			}
+			return Path.GetFullPath("screenshot.png");
 		}
 
 		public void Forward(int port) {

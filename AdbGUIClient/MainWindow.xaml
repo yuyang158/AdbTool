@@ -3,11 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:AdbGUIClient"
+        xmlns:local="clr-namespace:AdbGUIClient.Converter"
         mc:Ignorable="d"
         Title="MainWindow"
         Height="600"
         Width="800">
+    <Window.Resources>
+        <local:NullToBoolValueConverter x:Key="NullToBoolValueConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"></RowDefinition>
@@ -24,8 +27,9 @@
             </Grid.ColumnDefinitions>
             <ComboBox Text="Devices: "
                       Width="100"
+                      Name="cbbDevice"
                       HorizontalAlignment="Left"
-                      SelectedItem="{Binding Path=SelectedDevice}"
+                      SelectedItem="{Binding Path=SelectedDevice, Mode=TwoWay}"
                       ItemsSource="{Binding Path=Devices}"></ComboBox>
             <TextBox IsReadOnly="True"
                      Grid.Column="1"
@@ -39,6 +43,7 @@
                     Click="Refresh_Click"
                     Margin="5,0,0,0">Refresh</Button>
             <Button Grid.Column="4"
+                    IsEnabled="{Binding Path=SelectedDevice, Converter={StaticResource NullToBoolValueConverter}}"
                     Click="Capture_Click"
                     Margin="5,0,0,0">Capture</Button>
         </Grid>
