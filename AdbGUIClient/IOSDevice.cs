@@ -46,7 +46,7 @@ namespace AdbGUIClient {
 			using (StreamReader reader = process.StandardOutput) {
 				while (reader.EndOfStream == false) {
 					var line = await reader.ReadLineAsync();
-					callback(line);
+					callback(line + "\n");
 				}
 			}
 		}

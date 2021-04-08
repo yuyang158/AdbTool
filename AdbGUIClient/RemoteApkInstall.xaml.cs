@@ -55,7 +55,7 @@ namespace AdbGUIClient {
 			if (GlobalData.Instance.DownloadUrl.StartsWith("http") || GlobalData.Instance.DownloadUrl.StartsWith("https")) {
 				var uri = new Uri(GlobalData.Instance.DownloadUrl);
 				var filename = Path.GetFileName(uri.LocalPath);
-				targetFile = $"./${DownloadDirectoryName}/{filename}";
+				targetFile = $"./{DownloadDirectoryName}/{filename}";
 				if (File.Exists(targetFile)) {
 					InstallFile(targetFile);
 					return;
