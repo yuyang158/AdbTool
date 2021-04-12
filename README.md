@@ -6,9 +6,9 @@
 2. 在Package Name文本框中输入要调试的包名
 3. 连上手机，在左上角的设备选择中选中要调试的手机
 
-## 安装Apk(Apk Install)
+## 安装
 
-1. 在URL中输入apk网络下载路径。例如http://www.aaa.com/1.apk
+1. 在URL中输入安装包本地或网络下载路径。例如http://www.aaa.com/1.apk
 2. 点击Install
 
 ## 调试Lua上传(Lua Upload) 需配合https://github.com/yuyang158/Unity-Extend
