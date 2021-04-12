@@ -76,7 +76,7 @@ namespace AdbGUIClient {
 		}
 
 		public void Delete(string remotePath) {
-			throw new NotImplementedException();
+			RunCmd($"--udid {m_deviceUdid} fsync -B \"{GlobalData.Instance.IOSBundleID}\" rmtree \"/Documents/{remotePath}\"");
 		}
 
 		public async void InstallPackage(string localFilePath, Action<string> callback) {

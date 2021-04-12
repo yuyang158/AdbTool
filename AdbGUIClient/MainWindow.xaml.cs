@@ -14,7 +14,8 @@ namespace AdbGUIClient {
 			typeof(CpuInfo),
 			typeof(RemoteApkInstall),
 			typeof(LuaUpload),
-			typeof(LogView)
+			typeof(LogView),
+			typeof(SystemSettingView)
 		};
 
 		private const string CONFIG_PATH = "./save.xml";
@@ -31,6 +32,7 @@ namespace AdbGUIClient {
 		}
 
 		public MainWindow() {
+			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 			InitializeComponent();
 			if (File.Exists(CONFIG_PATH)) {
 				using var reader = new StreamReader(CONFIG_PATH);
@@ -57,6 +59,10 @@ namespace AdbGUIClient {
 			cbbDevice.SelectionChanged += CbbDevice_SelectionChanged;
 
 			RefreshDevice();
+		}
+
+		private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e) {
+			MessageBox.Show($"Exception : {e.ExceptionObject}");
 		}
 
 		private void CbbDevice_SelectionChanged(object sender, SelectionChangedEventArgs e) {
