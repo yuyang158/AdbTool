@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-using SharpAdbClient;
 using System;
 using System.IO;
 using System.Linq;
@@ -19,7 +18,7 @@ namespace AdbGUIClient {
 		};
 
 		private const string CONFIG_PATH = "./save.xml";
-		private ISubControlPanel[] m_subPanels;
+		private readonly ISubControlPanel[] m_subPanels;
 
 		private ISubControlPanel CreateSubPanel(Type type) {
 			var panel = Activator.CreateInstance(type) as ISubControlPanel;
@@ -137,6 +136,12 @@ namespace AdbGUIClient {
 			var path = GlobalData.Instance.SelectedDevice.TakeScreenShot();
 			var preview = new ImagePreviewWindow(path);
 			preview.Show();
+		}
+
+		private void tcControlContainer_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+			var index = tcControlContainer.SelectedIndex;
+			var panel = m_subPanels[index];
+			panel.Active();
 		}
 	}
 }

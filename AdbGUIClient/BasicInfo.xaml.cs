@@ -6,6 +6,9 @@ namespace AdbGUIClient {
 			InitializeComponent();
 		}
 
+		public void Active() {
+		}
+
 		public void AssignDevice(IDevice device) {
 			txtDeviceDetail.Text = device != null ? device.DeviceInfo : "";
 		}

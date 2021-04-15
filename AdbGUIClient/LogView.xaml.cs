@@ -39,5 +39,8 @@ namespace AdbGUIClient {
 		private void PullStatLog_Click(object sender, RoutedEventArgs e) {
 			PullFileAndReadToText("stat.log");
 		}
+
+		public void Active() {
+		}
 	}
 }

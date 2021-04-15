@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace AdbGUIClient {
 	/// <summary>
@@ -8,6 +7,9 @@ namespace AdbGUIClient {
 	public partial class CpuInfo : UserControl, ISubControlPanel {
 		public CpuInfo() {
 			InitializeComponent();
+		}
+
+		public void Active() {
 		}
 
 		public void AssignDevice(IDevice data) {

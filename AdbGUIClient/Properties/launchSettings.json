@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AdbGUIClient": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Svn\\GOH_Client\\Tools\\MobileDeviceTool"
+    }
+  }
+}

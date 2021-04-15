@@ -14,7 +14,7 @@ namespace AdbGUIClient {
 
 		private IniFile m_iniFile;
 		private class IniValue {
-			private IniFile m_owner;
+			private readonly IniFile m_owner;
 			public IniValue(IniFile owner) {
 				m_owner = owner;
 			}
@@ -38,7 +38,7 @@ namespace AdbGUIClient {
 
 		private readonly List<IniValue> m_dataBindingValues = new List<IniValue>();
 
-		private void SystemSettingView_GotFocus(object sender, RoutedEventArgs e) {
+		private void SystemSettingView_GotFocus() {
 			m_iniFile = new IniFile();
 			m_iniFile.Load(m_device.Pull("SystemSetting.ini"));
 			m_dataBindingValues.Clear();
@@ -59,7 +59,7 @@ namespace AdbGUIClient {
 
 		public void AssignDevice(IDevice device) {
 			m_device = device;
-			SystemSettingView_GotFocus(null, (RoutedEventArgs)null);
+			
 		}
 
 		public string GetName() {
@@ -69,6 +69,14 @@ namespace AdbGUIClient {
 		private void ApplyButton_Click(object sender, RoutedEventArgs e) {
 			m_iniFile.Save("./temp_setting.ini");
 			m_device.Push("./temp_setting.ini", "SystemSetting.ini");
+		}
+
+		public void Active() {
+			if (m_device == null)
+				return;
+			if (string.IsNullOrEmpty(GlobalData.Instance.IOSBundleID))
+				return;
+			SystemSettingView_GotFocus();
 		}
 	}
 }

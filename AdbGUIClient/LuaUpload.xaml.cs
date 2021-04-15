@@ -14,7 +14,6 @@ namespace AdbGUIClient {
 
 		private IDevice m_device;
 		public void AssignDevice(IDevice device) {
-			BuildRootPath();
 			m_device = device;
 		}
 
@@ -80,6 +79,10 @@ namespace AdbGUIClient {
 
 		private void ClearRemoteFolder_Click(object sender, RoutedEventArgs e) {
 			m_device.Delete("Lua");
+		}
+
+		public void Active() {
+			BuildRootPath();
 		}
 	}
 }

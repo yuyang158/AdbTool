@@ -99,5 +99,8 @@ namespace AdbGUIClient {
 
 			InstallFile(targetFile);
 		}
+
+		public void Active() {
+		}
 	}
 }
