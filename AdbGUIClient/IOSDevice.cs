@@ -54,17 +54,25 @@ namespace AdbGUIClient {
 
 		public static IDevice[] CollectIOSDevices() {
 			var json = RunCmd("list --json");
-			var deviceDataArray = JArray.Parse(json);
-
-			IDevice[] devices = new IDevice[deviceDataArray.Count];
-			for (int i = 0; i < deviceDataArray.Count; i++) {
-				var deviceData = deviceDataArray[i] as JObject;
-				var udid = deviceData["udid"].ToString();
-				var name = deviceData["name"].ToString();
-				devices[i] = new IOSDevice(udid, name);
+			if (string.IsNullOrEmpty(json)) {
+				return new IDevice[0];
 			}
+			try {
+				var deviceDataArray = JArray.Parse(json);
+				IDevice[] devices = new IDevice[deviceDataArray.Count];
+				for (int i = 0; i < deviceDataArray.Count; i++) {
+					var deviceData = deviceDataArray[i] as JObject;
+					var udid = deviceData["udid"].ToString();
+					var name = deviceData["name"].ToString();
+					devices[i] = new IOSDevice(udid, name);
+				}
 
-			return devices;
+				return devices;
+			}
+			catch (Exception) {
+				return new IDevice[0];
+			}
+			
 		}
 
 		private readonly string m_deviceUdid;
