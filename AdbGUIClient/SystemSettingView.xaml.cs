@@ -40,7 +40,8 @@ namespace AdbGUIClient {
 
 		private void SystemSettingView_GotFocus() {
 			m_iniFile = new IniFile();
-			m_iniFile.Load(m_device.Pull("SystemSetting.ini"));
+			var fileStream = m_device.Pull("SystemSetting.ini");
+			m_iniFile.Load(fileStream);
 			m_dataBindingValues.Clear();
 			foreach (var section in m_iniFile) {
 				foreach (var keyValue in section.Value) {
@@ -53,6 +54,7 @@ namespace AdbGUIClient {
 			}
 
 			lvIniValues.ItemsSource = m_dataBindingValues;
+			File.Delete("SystemSetting.ini");
 		}
 
 		private IDevice m_device;
