@@ -27,10 +27,16 @@ namespace AdbGUIClient {
 				UseShellExecute = false,
 				RedirectStandardOutput = true
 			};
-			using (Process process = Process.Start(start))
-			using (StreamReader reader = process.StandardOutput) {
-				string result = reader.ReadToEnd();
-				return result;
+
+			try {
+				using (Process process = Process.Start(start))
+				using (StreamReader reader = process.StandardOutput) {
+					string result = reader.ReadToEnd();
+					return result;
+				}
+			}
+			catch (Exception) {
+				return string.Empty;
 			}
 		}
 
@@ -55,7 +61,7 @@ namespace AdbGUIClient {
 		public static IDevice[] CollectIOSDevices() {
 			var json = RunCmd("list --json");
 			if (string.IsNullOrEmpty(json)) {
-				return new IDevice[0];
+				return Array.Empty<IDevice>();
 			}
 			try {
 				var deviceDataArray = JArray.Parse(json);
