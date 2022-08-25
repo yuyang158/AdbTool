@@ -28,6 +28,9 @@ namespace AdbGUIClient {
 					m_value = value;
 					m_owner.TryGetSection(Section, out var section);
 					section[Key] = Value;
+
+					var mainWindow = Application.Current.MainWindow as MainWindow;
+					mainWindow.Log = $"{Key} = {Value}";
 				}
 			}
 
@@ -75,8 +78,6 @@ namespace AdbGUIClient {
 
 		public void Active() {
 			if (m_device == null)
-				return;
-			if (string.IsNullOrEmpty(GlobalData.Instance.IOSBundleID))
 				return;
 			SystemSettingView_GotFocus();
 		}

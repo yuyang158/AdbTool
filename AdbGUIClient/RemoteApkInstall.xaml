@@ -17,17 +17,23 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="35"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition Width="80"></ColumnDefinition>
+                <ColumnDefinition Width="170"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0">URL :</TextBlock>
             <TextBox Grid.Column="1"
                      Name="txtUrl"
                      Text="{Binding Path=DownloadUrl, Mode=TwoWay}"
                      Width="Auto"></TextBox>
-            <Button x:Name="btnInstall"
-                    Grid.Column="2"
-                    Margin="5,0,0,0"
-                    Click="btnInstall_ClickAsync">Install</Button>
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button x:Name="btnInstall"
+                        Margin="5,0,0,0"
+                        Width="75"
+                        Click="btnInstall_ClickAsync">Install</Button>
+                <Button x:Name="btnPush"
+                        Margin="10,0,0,0"
+                        Width="75"
+                        Click="btnPush_Click">Push</Button>
+            </StackPanel>
         </Grid>
         <TextBlock Grid.Row="1"
                    Name="txtLog"></TextBlock>

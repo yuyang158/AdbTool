@@ -37,6 +37,12 @@ namespace AdbGUIClient {
 		private IDevice m_device;
 		public void AssignDevice(IDevice device) {
 			m_device = device;
+			if(m_device is AndroidDevice) {
+				btnPush.Visibility = Visibility.Visible;
+			}
+			else {
+				btnPush.Visibility = Visibility.Collapsed;
+			}
 		}
 
 		private void InstallFile(string filename) {
@@ -48,20 +54,26 @@ namespace AdbGUIClient {
 			});
 		}
 
+		private void PushFile(string filename) {
+			txtLog.Text += ($"Push : {Path.GetFileName(filename)} To {m_device}\n");
+			m_device.PushPackage(filename);
+			txtLog.Text += "Push Success \n";
+		}
+
 		private const string DownloadDirectoryName = "PackageDownload";
 
-		private async void btnInstall_ClickAsync(object sender, RoutedEventArgs e) {
-			string targetFile;
+		private async Task<string> DownloadFile() {
+			string targetFile = string.Empty;
 			if (GlobalData.Instance.DownloadUrl.StartsWith("http") || GlobalData.Instance.DownloadUrl.StartsWith("https")) {
 				var uri = new Uri(GlobalData.Instance.DownloadUrl);
 				var filename = Path.GetFileName(uri.LocalPath);
 				targetFile = $"./{DownloadDirectoryName}/{filename}";
 				if (File.Exists(targetFile)) {
 					InstallFile(targetFile);
-					return;
+					return targetFile;
 				}
 
-				var req = WebRequest.Create(uri);
+				WebRequest req = WebRequest.Create(uri);
 				var response = await req.GetResponseAsync();
 				var fileSize = response.ContentLength;
 
@@ -93,14 +105,23 @@ namespace AdbGUIClient {
 				}
 				else {
 					txtLog.Text += $"URL is not a load address or web address : {GlobalData.Instance.DownloadUrl}\n";
-					return;
+					return targetFile;
 				}
 			}
+			return targetFile;
+		}
 
+		private async void btnInstall_ClickAsync(object sender, RoutedEventArgs e) {
+			var targetFile = await DownloadFile();
 			InstallFile(targetFile);
 		}
 
 		public void Active() {
+		}
+
+		private async void btnPush_Click(object sender, RoutedEventArgs e) {
+			var targetFile = await DownloadFile();
+			PushFile(targetFile);
 		}
 	}
 }

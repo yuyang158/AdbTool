@@ -30,6 +30,8 @@ namespace AdbGUIClient {
 			return panel;
 		}
 
+		public string Log { get => tbLog.Text; set => tbLog.Text = value; }
+
 		public MainWindow() {
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 			InitializeComponent();

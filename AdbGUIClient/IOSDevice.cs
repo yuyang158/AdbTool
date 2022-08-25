@@ -40,11 +40,11 @@ namespace AdbGUIClient {
 			}
 		}
 
-		private static async Task RunCmdAsync(string cmdParam, Action<string> callback) {
+		private static async Task RunCmdAsync(string cmdParam, Action<string> callback, bool showCmdWin = false) {
 			ProcessStartInfo start = new ProcessStartInfo {
 				FileName = "tidevice",
 				Arguments = cmdParam,
-				CreateNoWindow = true,
+				CreateNoWindow = !showCmdWin,
 				UseShellExecute = false,
 				RedirectStandardOutput = true
 			};
@@ -94,7 +94,7 @@ namespace AdbGUIClient {
 		}
 
 		public async void InstallPackage(string localFilePath, Action<string> callback) {
-			await RunCmdAsync($"--udid {m_deviceUdid} install {localFilePath}", callback);
+			await RunCmdAsync($"--udid {m_deviceUdid} install {localFilePath}", callback, true);
 			RunCmd($"--udid {m_deviceUdid} launch {GlobalData.Instance.IOSBundleID}");
 		}
 
@@ -132,6 +132,10 @@ namespace AdbGUIClient {
 		}
 
 		public void Dispose() {
+		}
+
+		public void PushPackage(string localFilePath) {
+			throw new NotImplementedException();
 		}
 	}
 }

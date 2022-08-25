@@ -162,5 +162,14 @@ namespace AdbGUIClient {
 
 		public void Dispose() {
 		}
+
+		public void PushPackage(string localSourceFile) {
+			var filename = Path.GetFileName(localSourceFile);
+			var remotePath = $"/sdcard/{filename}";
+			using var stream = new FileStream(localSourceFile, FileMode.Open);
+			var m_syncService = new SyncService(m_client, m_deviceData);
+			m_syncService.Push(stream, remotePath, 666, DateTime.Now, null, CancellationToken.None);
+			m_syncService.Dispose();
+		}
 	}
 }
