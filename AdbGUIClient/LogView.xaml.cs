@@ -22,9 +22,13 @@ namespace AdbGUIClient {
 		}
 
 		private void PullFileAndReadToText(string remoteFilePath) {
-			using (var stream = m_device.Pull(remoteFilePath))
-			using (var reader = new StreamReader(stream)) {
+			try {
+				using var stream = m_device.Pull(remoteFilePath);
+				using var reader = new StreamReader(stream);
 				txtLog.Text = reader.ReadToEnd();
+			}
+			catch (System.Exception) {
+
 			}
 		}
 

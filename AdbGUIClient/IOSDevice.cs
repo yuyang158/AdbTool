@@ -32,6 +32,11 @@ namespace AdbGUIClient {
 			try {
 				using (Process process = Process.Start(start))
 				using (StreamReader reader = process.StandardOutput) {
+					if (process.ExitCode != 0) {
+						MessageBox.Show("处理失败，请确认手机连接正确。打包时打开沙盒数据访问权限。");
+						return "";
+					}
+
 					string result = reader.ReadToEnd();
 					return result;
 				}
@@ -112,7 +117,10 @@ namespace AdbGUIClient {
 				MessageBox.Show("App Bundle ID Is Empty");
 				return null;
 			}
-			RunCmd($"--udid {m_deviceUdid} fsync -B \"{GlobalData.Instance.IOSBundleID}\" pull \"/Documents/{remotePath}\"");
+			var result = RunCmd($"--udid {m_deviceUdid} fsync -B \"{GlobalData.Instance.IOSBundleID}\" pull \"/Documents/{remotePath}\"");
+			if (string.IsNullOrEmpty(result)) {
+				return null;
+			}
 			return new FileStream(remotePath, FileMode.Open);
 		}
 
