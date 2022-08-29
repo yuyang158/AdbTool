@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace AdbGUIClient {
 	public class IOSDevice : IDevice {
@@ -90,20 +91,36 @@ namespace AdbGUIClient {
 		}
 
 		public void Delete(string remotePath) {
+			if(string.IsNullOrEmpty(GlobalData.Instance.IOSBundleID)) {
+				MessageBox.Show("App Bundle ID Is Empty");
+				return;
+			}
 			RunCmd($"--udid {m_deviceUdid} fsync -B \"{GlobalData.Instance.IOSBundleID}\" rmtree \"/Documents/{remotePath}\"");
 		}
 
 		public async void InstallPackage(string localFilePath, Action<string> callback) {
-			await RunCmdAsync($"--udid {m_deviceUdid} install {localFilePath}", callback, true);
+			if (string.IsNullOrEmpty(GlobalData.Instance.IOSBundleID)) {
+				MessageBox.Show("App Bundle ID Is Empty");
+				return;
+			}
+			await RunCmdAsync($"--udid {m_deviceUdid} install \"{localFilePath}\"", callback, true);
 			RunCmd($"--udid {m_deviceUdid} launch {GlobalData.Instance.IOSBundleID}");
 		}
 
 		public FileStream Pull(string remotePath) {
+			if (string.IsNullOrEmpty(GlobalData.Instance.IOSBundleID)) {
+				MessageBox.Show("App Bundle ID Is Empty");
+				return null;
+			}
 			RunCmd($"--udid {m_deviceUdid} fsync -B \"{GlobalData.Instance.IOSBundleID}\" pull \"/Documents/{remotePath}\"");
 			return new FileStream(remotePath, FileMode.Open);
 		}
 
 		public void Push(string localSourceFile, string remotePath) {
+			if (string.IsNullOrEmpty(GlobalData.Instance.IOSBundleID)) {
+				MessageBox.Show("App Bundle ID Is Empty");
+				return;
+			}
 			localSourceFile = localSourceFile.Replace('\\', '/');
 			remotePath = remotePath.Replace('\\', '/');
 
@@ -123,7 +140,7 @@ namespace AdbGUIClient {
 		}
 
 		public string TakeScreenShot() {
-			var ret = RunCmd($"--udid {m_deviceUdid} screenshot \"screenshot.png\"");
+			RunCmd($"--udid {m_deviceUdid} screenshot \"screenshot.png\"");
 			return Path.GetFullPath("screenshot.png");
 		}
 
