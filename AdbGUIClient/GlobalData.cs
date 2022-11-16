@@ -1,11 +1,33 @@
 ﻿using SharpAdbClient;
 using System;
+using System.IO;
 using System.Windows;
 using System.Xml.Serialization;
 
 namespace AdbGUIClient {
 	public class GlobalData : DependencyObject {
-		public static GlobalData Instance { get; set; }
+		private const string CONFIG_PATH = "./save.xml";
+		private static GlobalData m_instance;
+		public static GlobalData Instance {
+			get {
+				if(m_instance == null) {
+					if (File.Exists(CONFIG_PATH)) {
+						using var reader = new StreamReader(CONFIG_PATH);
+						XmlSerializer sl = new XmlSerializer(typeof(GlobalData));
+						try {
+							m_instance = sl.Deserialize(reader) as GlobalData;
+						}
+						catch (Exception) {
+							m_instance = new GlobalData();
+						}
+					}
+					else {
+						m_instance = new GlobalData();
+					}
+				}
+				return m_instance;
+			}
+		}
 
 		public string AndroidPackageName {
 			get { return (string)GetValue(AndroidPackageNameProperty); }
@@ -52,7 +74,7 @@ namespace AdbGUIClient {
 			set {
 				SetValue(AdbPathProperty, value);
 				AdbServer server = new AdbServer();
-				if (!server.GetStatus().IsRunning) {
+				if (!server.GetStatus().IsRunning && !string.IsNullOrEmpty(AdbPath) && File.Exists(AdbPath)) {
 					server.StartServer(AdbPath, false);
 				}
 			}
@@ -84,5 +106,17 @@ namespace AdbGUIClient {
 		public static readonly DependencyProperty SelectedDeviceProperty =
 			DependencyProperty.Register("SelectedDevice", typeof(IDevice), typeof(GlobalData), new PropertyMetadata(null));
 
+		[XmlIgnore]
+		public bool UsingMTP { get; set; } = true;
+
+		[XmlIgnore]
+		public string AndroidMTPId { get; set; }
+
+		public void Save() {
+			XmlSerializer sl = new XmlSerializer(typeof(GlobalData));
+			using (var stream = new StreamWriter(CONFIG_PATH)) {
+				sl.Serialize(stream, Instance);
+			}
+		}
 	}
 }

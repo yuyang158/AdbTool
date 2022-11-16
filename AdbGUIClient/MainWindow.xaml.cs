@@ -1,10 +1,10 @@
-﻿using Microsoft.Win32;
+﻿using MediaDevices;
+using Microsoft.Win32;
 using System;
-using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Xml.Serialization;
 
 namespace AdbGUIClient {
 	public partial class MainWindow : Window {
@@ -17,7 +17,6 @@ namespace AdbGUIClient {
 			typeof(SystemSettingView)
 		};
 
-		private const string CONFIG_PATH = "./save.xml";
 		private readonly ISubControlPanel[] m_subPanels;
 
 		private ISubControlPanel CreateSubPanel(Type type) {
@@ -35,19 +34,6 @@ namespace AdbGUIClient {
 		public MainWindow() {
 			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 			InitializeComponent();
-			if (File.Exists(CONFIG_PATH)) {
-				using var reader = new StreamReader(CONFIG_PATH);
-				XmlSerializer sl = new XmlSerializer(typeof(GlobalData));
-				try {
-					GlobalData.Instance = sl.Deserialize(reader) as GlobalData;
-				}
-				catch (Exception) {
-					GlobalData.Instance = new GlobalData();
-				}
-			}
-			else {
-				GlobalData.Instance = new GlobalData();
-			}
 
 			m_subPanels = new ISubControlPanel[m_subControlTypes.Length];
 			for (int i = 0; i < m_subControlTypes.Length; i++) {
@@ -110,10 +96,7 @@ namespace AdbGUIClient {
 		}
 
 		private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-			XmlSerializer sl = new XmlSerializer(typeof(GlobalData));
-			using (var stream = new StreamWriter(CONFIG_PATH)) {
-				sl.Serialize(stream, GlobalData.Instance);
-			}
+			GlobalData.Instance.Save();
 		}
 
 		private void SelectAdb_Click(object sender, RoutedEventArgs e) {
@@ -144,6 +127,52 @@ namespace AdbGUIClient {
 			var index = tcControlContainer.SelectedIndex;
 			var panel = m_subPanels[index];
 			panel.Active();
+		}
+
+		private void cbUsingMTP_Checked(object sender, RoutedEventArgs e) {
+			GlobalData.Instance.UsingMTP = cbUsingMTP.IsChecked.Value;
+			if (cbbDiskDrives == null) {
+				return;
+			}
+			cbbDiskDrives.Visibility = cbUsingMTP.IsChecked == false ? Visibility.Collapsed : Visibility.Visible;
+
+			var devices = MediaDevice.GetDevices();
+			var driveNames = new List<string>();
+			foreach (var device in devices) {
+				driveNames.Add($"{device.Description}|{device.DeviceId}");
+			}
+
+			cbbDiskDrives.ItemsSource = driveNames;
+		}
+
+		private void cbbDiskDrives_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+			var deviceName = cbbDiskDrives.SelectedItem.ToString();
+			GlobalData.Instance.AndroidMTPId = deviceName.Substring(deviceName.IndexOf('|') + 1);
+
+			var devices = MediaDevice.GetDevices();
+			MediaDevice selectDevice = null;
+			foreach (var device in devices) {
+				if (device.DeviceId == GlobalData.Instance.AndroidMTPId) {
+					selectDevice = device;
+					break;
+				}
+			}
+			if (selectDevice == null) {
+				return;
+			}
+			selectDevice.Connect();
+			var rootDirectory = selectDevice.GetRootDirectory().FullName;
+
+			var drives = selectDevice.GetDrives();
+			foreach (var drive in drives) {
+				Console.WriteLine(drive.RootDirectory);
+			}
+
+			var directories = selectDevice.GetDirectories(selectDevice.GetRootDirectory().FullName);
+			foreach (var directory in directories) {
+				Console.WriteLine(directory);
+			}
+			Console.WriteLine(rootDirectory);
 		}
 	}
 }

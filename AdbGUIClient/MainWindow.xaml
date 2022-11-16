@@ -50,13 +50,14 @@
         </Grid>
         <Grid Grid.Row="1"
               x:Name="grdAndroid"
-              Visibility="Collapsed"
               Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="60"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock>Android Package Name :</TextBlock>
@@ -73,6 +74,22 @@
                     Width="80"
                     Margin="5,0,0,0"
                     Grid.Column="4">Apply</Button>
+            <CheckBox Grid.Column="5"
+                      VerticalAlignment="Center"
+                      IsChecked="False"
+                      Checked="cbUsingMTP_Checked"
+                      Unchecked="cbUsingMTP_Checked"
+                      Name="cbUsingMTP"
+                      ToolTip="是否使用MTP对手机进行上传下载"
+                      Margin="5,0,0,0">Using MTP</CheckBox>
+            <ComboBox Grid.Column="6"
+                      Width="80"
+                      SelectionChanged="cbbDiskDrives_SelectionChanged"
+                      Visibility="Collapsed"
+                      ItemsSource="{Binding}"
+                      DisplayMemberPath="{Binding Path=Description}"
+                      Name="cbbDiskDrives"
+                      Margin="5,0,0,0"></ComboBox>
         </Grid>
         <Grid Grid.Row="1"
               x:Name="grdIOS"
@@ -92,6 +109,7 @@
                         SelectionChanged="tcControlContainer_SelectionChanged">
             </TabControl>
         </Grid>
-        <TextBlock Grid.Row="3" Name="tbLog"></TextBlock>
+        <TextBlock Grid.Row="3"
+                   Name="tbLog"></TextBlock>
     </Grid>
 </Window>

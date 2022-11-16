@@ -1,4 +1,5 @@
-﻿using SharpAdbClient;
+﻿using MediaDevices;
+using SharpAdbClient;
 using SharpAdbClient.DeviceCommands;
 using System;
 using System.Drawing.Imaging;
@@ -106,22 +107,75 @@ namespace AdbGUIClient {
 
 		public FileStream Pull(string remotePath) {
 			File.Delete("./pull.log");
-			remotePath = $"/sdcard/Android/data/{GlobalData.Instance.AndroidPackageName}/files/{remotePath}";
-			var service = new SyncService(m_client, m_deviceData);
-			var stream = new FileStream("./pull.log", FileMode.Create);
-			service.Pull(remotePath, stream, null, CancellationToken.None);
-			service.Dispose();
-			stream.Seek(0, SeekOrigin.Begin);
-			service.Dispose();
-			return stream;
+
+			if (!GlobalData.Instance.UsingMTP) {
+				remotePath = $"/sdcard/Android/data/{GlobalData.Instance.AndroidPackageName}/files/{remotePath}";
+				var service = new SyncService(m_client, m_deviceData);
+				var stream = new FileStream("./pull.log", FileMode.Create);
+				service.Pull(remotePath, stream, null, CancellationToken.None);
+				service.Dispose();
+				stream.Seek(0, SeekOrigin.Begin);
+				service.Dispose();
+				return stream;
+			}
+			else {
+				if (string.IsNullOrEmpty(GlobalData.Instance.AndroidMTPId)) {
+					return null;
+				}
+
+				MediaDevice selectDevice = SelectMTPDevice();
+				if (selectDevice == null) {
+					return null;
+				}
+
+				var stream = File.Open("./pull.txt", FileMode.OpenOrCreate);
+				var deviceRoot = selectDevice.GetDrives()[0].RootDirectory.FullName;
+				remotePath = $"{deviceRoot}/Android/data/{GlobalData.Instance.AndroidPackageName}/files/{remotePath}";
+				selectDevice.DownloadFile(remotePath, stream);
+				stream.Seek(0, SeekOrigin.Begin);
+				return stream;
+			}
+		}
+
+		private static MediaDevice SelectMTPDevice() {
+			var devices = MediaDevice.GetDevices();
+			foreach (var device in devices) {
+				if (device.DeviceId == GlobalData.Instance.AndroidMTPId) {
+					return device;
+				}
+			}
+
+			return null;
+		}
+
+		private void MTPDirectoryCreate(MediaDevice device, string directory) {
+			if(device.DirectoryExists(directory)) {
+				return;
+			}
+
+			MTPDirectoryCreate(device, Path.GetDirectoryName(directory));
+			device.CreateDirectory(directory);
 		}
 
 		public void Push(string localSourceFile, string remotePath) {
-			remotePath = $"/sdcard/Android/data/{GlobalData.Instance.AndroidPackageName}/files/{remotePath}";
-			using var stream = new FileStream(localSourceFile, FileMode.Open);
-			var m_syncService = new SyncService(m_client, m_deviceData);
-			m_syncService.Push(stream, remotePath, 666, DateTime.Now, null, CancellationToken.None);
-			m_syncService.Dispose();
+			if (!GlobalData.Instance.UsingMTP) {
+				remotePath = $"/sdcard/Android/data/{GlobalData.Instance.AndroidPackageName}/files/{remotePath}";
+				using var stream = new FileStream(localSourceFile, FileMode.Open);
+				var m_syncService = new SyncService(m_client, m_deviceData);
+				m_syncService.Push(stream, remotePath, 666, DateTime.Now, null, CancellationToken.None);
+				m_syncService.Dispose();
+			}
+			else {
+				MediaDevice selectDevice = SelectMTPDevice();
+				if (selectDevice == null) {
+					return;
+				}
+				var deviceRoot = selectDevice.GetDrives()[0].RootDirectory.FullName;
+				remotePath = $"{deviceRoot}/Android/data/{GlobalData.Instance.AndroidPackageName}/files/{remotePath}";
+
+				MTPDirectoryCreate(selectDevice, Path.GetDirectoryName(remotePath));
+				selectDevice.UploadFile(localSourceFile, remotePath);
+			}
 		}
 
 		public void Delete(string remotePath) {

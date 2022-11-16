@@ -27,7 +27,7 @@ namespace AdbGUIClient {
 				using var reader = new StreamReader(stream);
 				txtLog.Text = reader.ReadToEnd();
 			}
-			catch (System.Exception) {
+			catch (System.Exception) {	
 
 			}
 		}
