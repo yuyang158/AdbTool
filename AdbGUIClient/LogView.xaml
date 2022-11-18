@@ -3,19 +3,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ip="clr-namespace:IPUserControls;assembly=IPUserControls"
              xmlns:local="clr-namespace:AdbGUIClient"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
                     Margin="5">
+            <CheckBox Name="cbUsingNetwork">Using Network</CheckBox>
+            <ip:IpField x:Name="ifInput"
+                        Visibility="Collapsed"
+                        Margin="5,0,0,0"></ip:IpField>
             <Button Width="120"
+                    Margin="5,0,0,0"
                     Click="PullErrorLog_Click">Error.log</Button>
             <Button Margin="5,0,0,0"
                     Click="PullLastErrorLog_Click"

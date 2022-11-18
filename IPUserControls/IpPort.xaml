@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="IPUserControls.IpPort"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             Background="White"
+             mc:Ignorable="d"
+             VerticalAlignment="Center"
+             x:Name="Uc">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBox
+            Name="PortNrTextBox"
+            Grid.Column="1"
+            Height="22"
+            ToolTip="Port"
+            Width="42"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            VerticalAlignment="Center"
+            Text="{Binding PortNumber, ElementName=Uc}"
+            TextChanged="PortNumber_TextChanged"
+            GotKeyboardFocus="PortNrTextBox_GotKeyboardFocus" 
+            BorderThickness="1"
+            BorderBrush="DarkGray"/>
+    </Grid>
+</UserControl> 

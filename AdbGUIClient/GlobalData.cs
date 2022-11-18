@@ -107,7 +107,7 @@ namespace AdbGUIClient {
 			DependencyProperty.Register("SelectedDevice", typeof(IDevice), typeof(GlobalData), new PropertyMetadata(null));
 
 		[XmlIgnore]
-		public bool UsingMTP { get; set; } = true;
+		public bool UsingMTP { get; set; } = false;
 
 		[XmlIgnore]
 		public string AndroidMTPId { get; set; }

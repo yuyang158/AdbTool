@@ -32,6 +32,7 @@ namespace AdbGUIClient {
 			try {
 				using (Process process = Process.Start(start))
 				using (StreamReader reader = process.StandardOutput) {
+					process.WaitForExit();
 					if (process.ExitCode != 0) {
 						MessageBox.Show("处理失败，请确认手机连接正确。打包时打开沙盒数据访问权限。");
 						return "";
