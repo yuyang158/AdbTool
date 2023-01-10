@@ -105,6 +105,9 @@ namespace AdbGUIClient {
 			}
 		}
 
+
+
+
 		public FileStream Pull(string remotePath) {
 			File.Delete("./pull.log");
 
@@ -174,6 +177,9 @@ namespace AdbGUIClient {
 				remotePath = $"{deviceRoot}/Android/data/{GlobalData.Instance.AndroidPackageName}/files/{remotePath}";
 
 				MTPDirectoryCreate(selectDevice, Path.GetDirectoryName(remotePath));
+				if(selectDevice.FileExists(remotePath)) {
+					selectDevice.DeleteFile(remotePath);
+				}
 				selectDevice.UploadFile(localSourceFile, remotePath);
 			}
 		}
