@@ -54,7 +54,7 @@ namespace AdbGUIClient {
 
 		private string FetchLogByUDP(string type) {
 			UdpClient udpClient = new(16688);
-			udpClient.Connect(ifInput.IpAddress, 16677);
+			udpClient.Connect(ifInput.IpAddress, 36677);
 			var cmdBuffer = Encoding.UTF8.GetBytes(type);
 			udpClient.Send(cmdBuffer);
 
